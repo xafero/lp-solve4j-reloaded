@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="lpsolve55jr" default="jar">
+	<property name="src.dir" value="src" />
+	<property name="src.tests" value="test" />
+	<property name="build.dir" value="dist" />
+	<property name="lib.dir" value="lib" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="classes.tests" value="${build.dir}/testclasses" />
+	<property name="doc.dir" value="${build.dir}/doc" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="reports.tests" value="${build.dir}/reports" />
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="compile" depends="clean">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}"
+			includeantruntime="false">
+			<compilerarg line="-Xlint" />
+		</javac>
+		<mkdir dir="${classes.dir}/native" />
+		<copy todir="${classes.dir}/native">
+			<fileset dir="${src.dir}/native">
+				<exclude name="**/*.cpp" />
+				<exclude name="**/*.h" />
+			</fileset>
+		</copy>
+		<mkdir dir="${classes.tests}" />
+		<javac srcdir="${src.tests}" destdir="${classes.tests}"
+			includeantruntime="false">
+			<classpath>
+				<pathelement path="${lib.dir}/junit-4.11.jar" />
+				<pathelement location="${classes.dir}" />
+			</classpath>
+			<compilerarg line="-Xlint" />
+		</javac>
+	</target>
+
+	<target name="test" depends="compile">
+		<mkdir dir="${reports.tests}" />
+		<junit printsummary="yes" haltonfailure="yes">
+			<classpath>
+				<pathelement path="${lib.dir}/junit-4.11.jar" />
+				<pathelement path="${lib.dir}/hamcrest-core-1.3.jar" />
+				<pathelement path="${classes.dir}" />
+				<pathelement path="${classes.tests}" />
+			</classpath>
+			<formatter type="xml" />
+			<batchtest fork="no" todir="${reports.tests}">
+				<fileset dir="${classes.tests}">
+					<include name="**/*Test*.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="doc" depends="test">
+		<javadoc destdir="${doc.dir}">
+			<packageset dir="src" defaultexcludes="yes" />
+		</javadoc>
+		<copy todir="${doc.dir}">
+			<fileset dir="docs">
+				<include name="reference.html" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="jar" depends="doc">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+		</jar>
+		<jar destfile="${jar.dir}/${ant.project.name}-doc.jar" basedir="${doc.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}-src.jar" basedir="${src.dir}" />
+	</target>
+</project>
