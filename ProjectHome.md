@@ -1,0 +1,1 @@
+Based on 'lp\_solve' v5.5.2.0 (http://lpsolve.sourceforge.net/5.5/) and the Java wrapper by Juergen Ebert, this is a repackaged version of the linear solver to use it in a Java 6 Eclipse context. Also the JNI is wrapped inside of the JAR file (at least for Win32/64 systems).
